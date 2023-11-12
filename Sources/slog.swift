@@ -20,9 +20,17 @@ final public class Slogger {
   }
 }
 
+func slog(_ error: Error, file: String = #file, line: Int = #line, function: String = #function) {
+  if !Slogger.current.verbose {
+    return
+  }
+  
+  slog(error.localizedDescription, file: file, line: line, function: function)
+}
+
 func slog(_ logging: Any..., file: String = #file, line: Int = #line, function: String = #function) {
   if Slogger.current.verbose == false {
-    logging.forEach { debugPrint($0) }
+    logging.forEach { print($0) }
     return
   }
   

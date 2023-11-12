@@ -11,7 +11,6 @@ struct Media {
   let ref: String
   let format: String
   let size: UInt
-  let frameBuffer: [Frame]
 }
 
 struct Frame {
@@ -22,7 +21,7 @@ struct Frame {
 
 final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
   
-  private let media: Media? = nil
+  private var media: [Media?] = []
   private var frameBuffer: [Frame] = []
   
   func parserDidStartDocument(_ parser: XMLParser) {
@@ -33,6 +32,8 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
   func parserDidEndDocument(_ parser: XMLParser) {
     slog("End of the document")
     slog("Line number: \(parser.lineNumber)")
+    slog(media.first??.size)
+    slog(frameBuffer.count)
   }
   
   func parser(
@@ -42,13 +43,18 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
     qualifiedName qName: String?,
     attributes attributeDict: [String : String] = [:]
   ) {
-    
-    switch elementName {
-    case "frame":
-      print(attributeDict)
-    case "media":
-      print(attributeDict)
-    default: return
+    do {
+      switch elementName {
+      case "frame":
+        let frame = try Converter.frame.convert(data: attributeDict)
+        frameBuffer.append(frame)
+      case "media":
+        let _media = try Converter.media.convert(data: attributeDict)
+        media.append(_media)
+      default: return
+      }
+    } catch {
+      slog(error)
     }
   }
 }
