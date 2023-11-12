@@ -2,8 +2,8 @@ import Foundation
 
 final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
   
-  private var media: Media?
-  private var frameBuffer: [Frame] = []
+  private (set) var media: Media?
+  private (set) var frameBuffer: [Frame] = []
   
   func parserDidStartDocument(_ parser: XMLParser) {
     slog("Start of the document")
@@ -31,7 +31,6 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
     qualifiedName qName: String?,
     attributes attributeDict: [String : String] = [:]
   ) {
-    slog("parsing \(elementName)")
     do {
       switch elementName {
       case "frame":

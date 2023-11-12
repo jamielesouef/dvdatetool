@@ -13,7 +13,8 @@ import ArgumentParser
       slog(DVDateError.noPath)
       return
     }
-      
+    slog("your name?")
+  
     slog("setup loggin...")
     Slogger.current.verbose(options.verbose)
     slog("setup time tool...")
