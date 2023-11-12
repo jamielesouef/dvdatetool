@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jamie Le Souef on 12/11/2023.
-//
-
 import Foundation
 
 final public class Slogger {
@@ -20,12 +13,8 @@ final public class Slogger {
   }
 }
 
-func slog(_ error: Error, file: String = #file, line: Int = #line, function: String = #function) {
-  if !Slogger.current.verbose {
-    return
-  }
-  
-  slog(error.localizedDescription, file: file, line: line, function: function)
+func slog(_ loggin: Error) {
+  slog(loggin.localizedDescription, file: #file)
 }
 
 func slog(_ logging: Any..., file: String = #file, line: Int = #line, function: String = #function) {

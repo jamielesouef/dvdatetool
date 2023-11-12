@@ -3,28 +3,22 @@
 import Foundation
 import ArgumentParser
 
-
-
 @main struct App: ParsableCommand {
-  private enum _Error: String, Error {
-      case noPath = "No path supplied"
-  }
   
-  @Option(name: .shortAndLong, help: "Path of the file to open")
-  var path: String? = nil
-  
-  @Flag(name: .shortAndLong)
-  var verbose: Bool = false
+  @OptionGroup var options: Options
 
   public mutating func run() throws {
     
-    guard let path = path else {
-      throw _Error.noPath
+    guard let path = options.path else {
+      slog(DVDateError.noPath)
+      return
     }
-    
-    Slogger.current.verbose(verbose)
-    
+      
+    slog("setup loggin...")
+    Slogger.current.verbose(options.verbose)
+    slog("setup time tool...")
     let tool = DVRescueTimeStamp()
+    
     try tool.run(pathString: path)
 
   }

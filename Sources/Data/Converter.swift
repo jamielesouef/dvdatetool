@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jamie Le Souef on 12/11/2023.
-//
-
 import Foundation
 
 final class Converter {

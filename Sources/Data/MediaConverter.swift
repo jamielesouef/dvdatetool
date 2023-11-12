@@ -1,11 +1,5 @@
-//
-//  File.swift
-//
-//
-//  Created by Jamie Le Souef on 12/11/2023.
-//
-
 import Foundation
+
 extension Converter {
    class MediaConverter {
     func convert(data: [String: String]) throws -> Media {
@@ -13,11 +7,15 @@ extension Converter {
             let format = data["format"],
             let size = data["size"] else {
         
-        throw ConverterError.missingXMLData
+        throw DVDateError.missingXMLData
+      }
+      
+      guard format == "DV" else {
+        throw DVDateError.onlyDVSupport
       }
       
       guard let sizeInt = UInt(size) else {
-        throw ConverterError.notANumber
+        throw DVDateError.notANumber
       }
       
       return Media(ref: ref, format: format, size: sizeInt)

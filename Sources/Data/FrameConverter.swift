@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by Jamie Le Souef on 12/11/2023.
-//
-
 import Foundation
 
 
@@ -24,11 +17,11 @@ extension Converter {
             let rdt = data["rdt"],
             let recordDate = formatter.date(from: rdt) else {
         
-        throw ConverterError.missingXMLData
+        throw DVDateError.missingXMLData
       }
       
       guard let nInt = UInt(n) else {
-        throw ConverterError.notANumber
+        throw DVDateError.notANumber
       }
       
       return Frame(n: nInt, recordDateTime: recordDate, recordStart: true)
