@@ -6,13 +6,13 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
   private (set) var frameBuffer: [Frame] = []
   
   func parserDidStartDocument(_ parser: XMLParser) {
-    slog("Start of the document")
-    slog("Line number: \(parser.lineNumber)")
+    vlog("Start of the document")
+    vlog("Line number: \(parser.lineNumber)")
   }
   
   func parserDidEndDocument(_ parser: XMLParser) {
-    slog("End of the document")
-    slog("Line number: \(parser.lineNumber)")
+    vlog("End of the document")
+    vlog("Line number: \(parser.lineNumber)")
     
     guard media != nil else {
       fatalError(DVDateError.noMediaInfoFound.localizedDescription)
@@ -21,7 +21,7 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
     guard frameBuffer.count > 0 else {
       fatalError(DVDateError.noMediaInfoFound.localizedDescription)
     }
-    slog(frameBuffer.count)
+    vlog("found \(frameBuffer.count) frames")
   }
   
   func parser(

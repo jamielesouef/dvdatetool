@@ -1,7 +1,7 @@
 import Foundation
 
 struct Media {
-  let ref: String
+  let ref: URL
   let format: String
   let size: UInt
 }

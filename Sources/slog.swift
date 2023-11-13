@@ -17,6 +17,12 @@ func slog(_ loggin: Error) {
   slog(loggin.localizedDescription, file: #file)
 }
 
+func vlog(_ logging: Any...) {
+  if Slogger.current.verbose {
+    slog(logging)
+  }
+}
+
 func slog(_ logging: Any..., file: String = #file, line: Int = #line, function: String = #function) {
   if Slogger.current.verbose == false {
     logging.forEach { print($0) }

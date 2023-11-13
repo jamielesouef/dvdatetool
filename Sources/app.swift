@@ -9,19 +9,27 @@ import ArgumentParser
 
   public mutating func run() throws {
     
-    guard let path = options.path else {
-      slog(DVDateError.noPath)
-      return
-    }
-    slog("your name?")
-  
-    slog("setup loggin...")
+    vlog("setup loggin...")
     Slogger.current.verbose(options.verbose)
-    slog("setup time tool...")
+    vlog("setup time tool...")
+    buildOptions()
     let tool = DVRescueTimeStamp()
     
-    try tool.run(pathString: path)
+    try tool.run(pathString: options.path)
 
+  }
+}
+
+private extension App {
+  func buildOptions() {
+    OptionsContainer.current.set(
+      path: options.path,
+      packageExtension: options.packageExtension,
+      packgedFilesPath: options.packgedFilesPath,
+      verbose: options.verbose,
+      packagePrefix: options.packagePrefix,
+      packagePostfix: options.packagePostfix
+    )
   }
 }
 
