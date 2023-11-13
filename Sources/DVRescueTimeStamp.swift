@@ -8,7 +8,7 @@ final public class DVRescueTimeStamp {
     slog("start tool")
     let data = try getDataFromFile(atPath: pathString)
     parseXML(with: data)
-    process(media: delegate.media, frames: delegate.frameBuffer)
+    try process(media: delegate.media, frames: delegate.frameBuffer)
   }
 }
 
@@ -26,11 +26,12 @@ private extension DVRescueTimeStamp {
     xmlParser.parse()
   }
   
-  func process(media: Media?, frames: [Frame]) {
+  func process(media: Media?, frames: [Frame]) throws {
     guard let media = media else {
       fatalError(DVDateError.noMediaInfoFound.localizedDescription)
     }
     
     let builder = FileBuilder(media: media, frames: frames)
+    try builder.validate()
   }
 }

@@ -8,6 +8,7 @@ enum DVDateError: Swift.Error {
   case errorReadingFile(description: String)
   case fileNotFound(file: URL)
   case noPath
+  case validateStepFailed(reason: String)
   
 }
 
@@ -21,6 +22,7 @@ extension DVDateError: LocalizedError {
     case .errorReadingFile(let description): "Could not read file. \(description)"
     case .fileNotFound(let file): "Could not find file \(file)"
     case .noPath: "Path argument is required"
+    case .validateStepFailed(let reason): "Vailidation failed: \(reason)"
     }
   }
 }
