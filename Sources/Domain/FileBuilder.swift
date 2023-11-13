@@ -2,7 +2,14 @@ import Foundation
 
 struct DVFile {
   let src: URL
+  let file: String
   let timestamp: Date
+  
+  init(src: URL, timestamp: Date) {
+    self.src = src
+    self.timestamp = timestamp
+    self.file = src.lastPathComponent
+  }
 }
 
 final class FileBuilder {
@@ -35,7 +42,7 @@ final class FileBuilder {
   
   func validate() throws {
     guard let filePaths = FileManager.default.enumerator(atPath: path.absoluteString)?.allObjects as? [String] else {
-      return 
+      return
     }
     
     let packExtFiles = filePaths.filter { $0.contains(OptionsContainer.current.packageExtension)}
@@ -49,9 +56,66 @@ final class FileBuilder {
     
     slog("Found \(pC) files, matches \(dC)")
   }
+  
+  func prepare() throws {
+    try dvFiles.forEach { file in
+      let attribute = try FileManager.default.attributesOfItem(atPath: file.src.absoluteString)
+      guard let cD = attribute[.creationDate] as? Date else {
+        throw DVDateError.couldNotGetCreateDate
+      }
+      slog("will change create date for \(file.file) from \(cD.description) to \(file.timestamp.description)")
+    }
+    
+    slog("contine y/n? (this can not be undone")
+    let response = readLine()
+    
+    switch response {
+    case "y" : try perform()
+    default: exit(0)
+    }
+  }
+  
+  func perform() throws {
+    slog("will change files")
+    dvFiles.forEach { file in
+      slog("Changing create date for \(file.file)")
+      let attributes = [
+        FileAttributeKey.creationDate: file.timestamp,
+      ]
+      
+      
+      do {
+        let absoluteString = try copyFileIfRequried(from: file.src).absoluteString
+        try FileManager.default.setAttributes(attributes, ofItemAtPath: absoluteString)
+      } catch {
+        vlog(error)
+      }
+      slog("Done!")
+    }
+  }
 }
 
 private extension FileBuilder {
+  
+  func copyFileIfRequried(from src: URL) throws -> URL {
+    guard OptionsContainer.current.createNewFiles != nil else {
+      return src
+    }
+    
+    var path: URL = src.deletingLastPathComponent()
+    var name: [String] = src.lastPathComponent.components(separatedBy: ".")
+    let ext = name.removeLast()
+    name.append("copy")
+    name.append(ext)
+    
+    let newName = name.joined(separator: ".")
+    let newPath = path.appendingPathComponent(newName)
+    try FileManager.default.copyItem(atPath: src.absoluteString, toPath: newPath.absoluteString)
+    slog("Made copy \(newName)")
+    return newPath
+    
+  }
+  
   func makePathURL(for frame: Frame, at index: Int) -> URL {
     let index = index+1
     let pre = OptionsContainer.current.packagePrefix

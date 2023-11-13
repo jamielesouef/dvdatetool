@@ -19,6 +19,9 @@ final class Options: ParsableArguments {
   
   @Flag(name: .shortAndLong)
   var verbose: Bool = OptionsContainer.current.verbose
+  
+  @Option(name: .shortAndLong, help: "Create new files")
+  var createNewFiles: Bool?
 }
 
 
@@ -32,6 +35,7 @@ final class OptionsContainer {
   var verbose: Bool = false
   var packagePrefix = ""
   var packagePostfix = "_part"
+  var createNewFiles: Bool?
   
   private init() {}
   
@@ -41,7 +45,8 @@ final class OptionsContainer {
     packgedFilesPath: String,
     verbose: Bool,
     packagePrefix: String,
-    packagePostfix: String
+    packagePostfix: String,
+    createNewFiles: Bool?
   ) {
     self.path = path
     self.packageExtension = packageExtension
@@ -49,5 +54,6 @@ final class OptionsContainer {
     self.verbose = verbose
     self.packagePrefix = packagePrefix
     self.packagePostfix = packagePostfix
+    self.createNewFiles = createNewFiles
   }
 }

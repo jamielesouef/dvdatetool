@@ -51,22 +51,19 @@ private class _Slogger {
     self.function = function
     self.fileName = file.split(separator: "/").last?.replacingOccurrences(of: ".swift", with: "") ?? ""
   }
-  
-  func error(_ error: Error) {
-    message(error, true)
-  }
-  
+    
   func log(_ logging: Any...) {
     let d = logging.map { String(describing: $0) }.joined(separator: " | ")
     message(d)
   }
   
-  private func message(_ item: Any, _ error: Bool = false) {
-    let prefix = error ? "!!!" : "---"
+  private func message(_ item: Any) {
+    
+    let prefix = item is Error ? "!!! " : ""
     
 #if DEBUG
-    let message = "\(prefix)| \(item) |---\(fileName)::\(function):\(line))"
-    debugPrint(message)
+    let message = "\(prefix)\(item) |---\(fileName)::\(function):\(line))"
+    print(message)
 #endif
     
   }

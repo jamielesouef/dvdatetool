@@ -9,7 +9,7 @@ import ArgumentParser
 
   public mutating func run() throws {
     
-    vlog("setup loggin...")
+    vlog("DVDateTool.")
     Slogger.current.verbose(options.verbose)
     vlog("setup time tool...")
     buildOptions()
@@ -28,7 +28,8 @@ private extension App {
       packgedFilesPath: options.packgedFilesPath,
       verbose: options.verbose,
       packagePrefix: options.packagePrefix,
-      packagePostfix: options.packagePostfix
+      packagePostfix: options.packagePostfix,
+      createNewFiles: options.createNewFiles
     )
   }
 }

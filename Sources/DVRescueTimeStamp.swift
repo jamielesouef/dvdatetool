@@ -33,5 +33,6 @@ private extension DVRescueTimeStamp {
     
     let builder = FileBuilder(media: media, frames: frames)
     try builder.validate()
+    try builder.prepare()
   }
 }

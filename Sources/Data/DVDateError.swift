@@ -9,6 +9,7 @@ enum DVDateError: Swift.Error {
   case fileNotFound(file: URL)
   case noPath
   case validateStepFailed(reason: String)
+  case couldNotGetCreateDate
   
 }
 
@@ -23,6 +24,7 @@ extension DVDateError: LocalizedError {
     case .fileNotFound(let file): "Could not find file \(file)"
     case .noPath: "Path argument is required"
     case .validateStepFailed(let reason): "Vailidation failed: \(reason)"
+    case .couldNotGetCreateDate: "Could not get create date"
     }
   }
 }
