@@ -10,7 +10,7 @@ import ArgumentParser
   public mutating func run() throws {
     
     vlog("DVDateTool.")
-    Slogger.current.verbose(options.verbose)
+    
     vlog("setup time tool...")
     buildOptions()
     let tool = DVRescueTimeStamp()

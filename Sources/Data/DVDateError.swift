@@ -16,7 +16,7 @@ enum DVDateError: Swift.Error {
 extension DVDateError: LocalizedError {
   var errorDescription: String? {
     switch self {
-    case .missingXMLData: "Something missing from XML data to create"
+    case .missingXMLData: "Something missing from XML data to create, ignoring"
     case .notANumber: "N is not a number"
     case .onlyDVSupport: "Only DV format is supported"
     case .noMediaInfoFound: "No Media infor found in XML"

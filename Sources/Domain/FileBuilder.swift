@@ -41,14 +41,16 @@ final class FileBuilder {
   }
   
   func validate() throws {
+    vlog(path.absoluteString)
     guard let filePaths = FileManager.default.enumerator(atPath: path.absoluteString)?.allObjects as? [String] else {
-      return
+      throw DVDateError.validateStepFailed(reason: "Could not find all objects")
     }
     
     let packExtFiles = filePaths.filter { $0.contains(OptionsContainer.current.packageExtension)}
     
     let dC = dvFiles.count
     let pC = packExtFiles.count
+    vlog("dc", dC, "pC", pC)
     
     if dC != pC {
       throw DVDateError.validateStepFailed(reason: "file count does not match: \(dC):\(pC)")
@@ -66,7 +68,7 @@ final class FileBuilder {
       slog("will change create date for \(file.file) from \(cD.description) to \(file.timestamp.description)")
     }
     
-    slog("contine y/n? (this can not be undone")
+    slog("contine y/n? (this can not be undone)")
     let response = readLine()
     
     switch response {
