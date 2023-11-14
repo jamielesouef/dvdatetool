@@ -8,31 +8,15 @@ import ArgumentParser
   @OptionGroup var options: Options
 
   public mutating func run() throws {
-    
+    Slogger.current.setup(options: options)
     vlog("DVDateTool.")
     
     vlog("setup time tool...")
-    buildOptions()
     let source = try SourceBuilder(options: options).run()
-    let tool = DVRescueTimeStamp()
+    let tool = DVRescueTimeStamp(options: options)
     
 //    try tool.run(pathString: options.path)
 
   }
 }
-
-private extension App {
-  func buildOptions() {
-    OptionsContainer.current.set(
-      path: options.path,
-      packageExtension: options.packageExtension,
-      packgedFilesPath: options.packgedFilesPath,
-      verbose: options.verbose,
-      packagePrefix: options.packagePrefix,
-      packagePostfix: options.packagePostfix,
-      createNewFiles: options.createNewFiles
-    )
-  }
-}
-
 

@@ -9,7 +9,7 @@ struct Source {
   }
 }
 
-final class SourceBuilder {
+struct SourceBuilder {
   let options: Options
   
   init(options: Options) {

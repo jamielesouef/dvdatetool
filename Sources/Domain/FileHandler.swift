@@ -1,6 +1,6 @@
 import Foundation
 
-class FileHandler {
+struct FileHandler {
   let fileManager = FileManager.default
   let url: URL
   let path: String

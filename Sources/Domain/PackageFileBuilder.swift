@@ -18,8 +18,10 @@ final class PackageFileBuilder {
   let srcFile: String
   let path: URL
   
-  init(media: Media, frames: [Frame]) {
-    
+  private let options: Options
+  
+  init(options: Options, media: Media, frames: [Frame]) {
+    self.options = options
     self.src = media.ref
     self.srcFile = self.src.deletingPathExtension().lastPathComponent
     self.path = media.ref.deletingLastPathComponent()
@@ -46,7 +48,7 @@ final class PackageFileBuilder {
       throw DVDateError.validateStepFailed(reason: "Could not find all objects")
     }
     
-    let packExtFiles = filePaths.filter { $0.contains(OptionsContainer.current.packageExtension)}
+    let packExtFiles = filePaths.filter { $0.contains(options.packageExtension)}
     
     let dC = dvFiles.count
     let pC = packExtFiles.count
@@ -95,7 +97,7 @@ final class PackageFileBuilder {
 private extension PackageFileBuilder {
   
   func copyFileIfRequried(from src: URL) throws -> URL {
-    guard OptionsContainer.current.createNewFiles != nil else {
+    guard options.createNewFiles != nil else {
       return src
     }
     
@@ -115,9 +117,9 @@ private extension PackageFileBuilder {
   
   func makePathURL(for frame: Frame, at index: Int) -> URL {
     let index = index+1
-    let pre = OptionsContainer.current.packagePrefix
-    let post = OptionsContainer.current.packagePostfix
-    let ext = OptionsContainer.current.packageExtension
+    let pre = options.packagePrefix
+    let post = options.packagePostfix
+    let ext = options.packageExtension
     let src: String = "\(pre)\(srcFile)\(post)\(index).\(ext)"
     return path.appendingPathComponent(src)
   }

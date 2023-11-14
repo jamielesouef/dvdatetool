@@ -3,7 +3,19 @@ import Foundation
 final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
   
   private (set) var media: Media?
-  private (set) var frameBuffer: [Frame] = []
+  private (set) var frameBuffer: [Frame]
+  
+  let frameConverter: FrameConverter
+  let mediaConverter: MediaConverter
+  
+  init(media: Media? = nil, frameBuffer: [Frame] = [], options: Options) {
+    self.media = media
+    self.frameBuffer = frameBuffer
+    
+    self.frameConverter = FrameConverter()
+    self.mediaConverter = MediaConverter(path: options.path)
+    super.init()
+  }
   
   func parserDidStartDocument(_ parser: XMLParser) {
     vlog("Start of the document")
@@ -34,10 +46,10 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
     do {
       switch elementName {
       case "frame":
-        let frame = try Converter.frame.convert(data: attributeDict)
+        let frame = try frameConverter.convert(data: attributeDict)
         frameBuffer.append(frame)
       case "media":
-        let _media = try Converter.media.convert(data: attributeDict)
+        let _media = try mediaConverter.convert(data: attributeDict)
         media = _media
       default: return
       }

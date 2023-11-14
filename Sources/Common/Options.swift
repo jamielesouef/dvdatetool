@@ -1,21 +1,21 @@
 import Foundation
 import ArgumentParser
 
-final class Options: ParsableArguments {
+struct Options: ParsableArguments {
   @Argument(help: "Path to the dvresuce xml file(s)")
   var path: String
   
   @Argument(help: "Extension of the packaged files")
-  var packageExtension: String = OptionsContainer.current.packageExtension
+  var packageExtension: String = "mov"
   
   @Argument(help: "Package prefix")
-  var packagePrefix: String = OptionsContainer.current.packagePrefix
+  var packagePrefix: String = ""
   
   @Argument(help: "Package postfix")
-  var packagePostfix: String = OptionsContainer.current.packagePostfix
+  var packagePostfix: String = ""
   
   @Argument(help: "Path to packaged files")
-  var packgedFilesPath: String = OptionsContainer.current.packgedFilesPath
+  var packgedFilesPath: String = "/"
   
   @Flag(name: .shortAndLong, help: "Show more logging")
   var verbose: Int
@@ -29,38 +29,4 @@ final class Options: ParsableArguments {
   @Option(name: .shortAndLong, help: "The DVRescue XML postfix")
   var xmlPostfix: String = "dvrescue.xml"
   
-}
-
-
-
-final class OptionsContainer {
-  static let current = OptionsContainer()
-  
-  var path: String = "/"
-  var packageExtension: String = "mov"
-  var packgedFilesPath: String = "/"
-  var verbose: Int = 0
-  var packagePrefix = ""
-  var packagePostfix = "_part"
-  var createNewFiles: Bool?
-  
-  private init() {}
-  
-  func set(
-    path: String,
-    packageExtension: String,
-    packgedFilesPath: String,
-    verbose: Int,
-    packagePrefix: String,
-    packagePostfix: String,
-    createNewFiles: Bool?
-  ) {
-    self.path = path
-    self.packageExtension = packageExtension
-    self.packgedFilesPath = packgedFilesPath
-    self.verbose = verbose
-    self.packagePrefix = packagePrefix
-    self.packagePostfix = packagePostfix
-    self.createNewFiles = createNewFiles
-  }
 }

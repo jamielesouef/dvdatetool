@@ -1,9 +1,14 @@
 import Foundation
 
-final public class DVRescueTimeStamp {
+struct DVRescueTimeStamp {
   
-  private let delegate: DVRescueParserDelegate = DVRescueParserDelegate()
+  private let delegate: DVRescueParserDelegate
+  let options: Options
   
+  init(options: Options) {
+    self.delegate = DVRescueParserDelegate(options: options)
+    self.options = options
+  }
   func run(pathString: String) throws {
     slog("start tool")
     let data = try getDataFromFile(atPath: pathString)
@@ -31,7 +36,7 @@ private extension DVRescueTimeStamp {
       fatalError(DVDateError.noMediaInfoFound.localizedDescription)
     }
     
-    let builder = PackageFileBuilder(media: media, frames: frames)
+    let builder = PackageFileBuilder(options: options, media: media, frames: frames)
     try builder.validate()
     try builder.prepare()
   }

@@ -1,23 +1,28 @@
 import Foundation
 
 final public class Slogger {
+  private (set) var verbose: Int = 0
   static let current: Slogger = Slogger()
+  
+  func setup(options: Options) {
+    self.verbose = options.verbose
+  }
 }
 
 func slog(_ logging: Error, file: String = #file, line: Int = #line, function: String = #function) {
-  if OptionsContainer.current.verbose == 1 {
+  if Slogger.current.verbose == 1 {
     slog(logging.localizedDescription, file: #file, line: line, function: function)
   }
 }
 
 func vlog(_ logging: Any..., file: String = #file, line: Int = #line, function: String = #function) {
-  if OptionsContainer.current.verbose == 1 {
+  if Slogger.current.verbose == 1 {
     slog(logging, file: #file, line: line, function: function)
   }
 }
 
 func slog(_ logging: Any..., file: String = #file, line: Int = #line, function: String = #function) {
-  if OptionsContainer.current.verbose == 0 {
+  if Slogger.current.verbose == 0 {
     logging.forEach { print($0) }
     return
   }
