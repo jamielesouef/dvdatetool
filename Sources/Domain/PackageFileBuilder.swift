@@ -12,7 +12,7 @@ struct DVFile {
   }
 }
 
-final class FileBuilder {
+final class PackageFileBuilder {
   let src: URL
   var dvFiles: [DVFile] = []
   let srcFile: String
@@ -68,13 +68,8 @@ final class FileBuilder {
       slog("will change create date for \(file.file) from \(cD.description) to \(file.timestamp.description)")
     }
     
-    slog("contine y/n? (this can not be undone)")
-    let response = readLine()
+    prompt_continue(message: "(this can not be undone)")
     
-    switch response {
-    case "y" : try perform()
-    default: exit(0)
-    }
   }
   
   func perform() throws {
@@ -97,7 +92,7 @@ final class FileBuilder {
   }
 }
 
-private extension FileBuilder {
+private extension PackageFileBuilder {
   
   func copyFileIfRequried(from src: URL) throws -> URL {
     guard OptionsContainer.current.createNewFiles != nil else {

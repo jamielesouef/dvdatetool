@@ -5,8 +5,6 @@ class FileHandler {
   let url: URL
   let path: String
   
- 
-  
   init(pathString: String) {
     self.path = pathString
     self.url = URL(fileURLWithPath: pathString)

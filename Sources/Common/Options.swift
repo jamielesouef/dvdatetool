@@ -2,7 +2,7 @@ import Foundation
 import ArgumentParser
 
 final class Options: ParsableArguments {
-  @Argument(help: "Path of the file to open")
+  @Argument(help: "Path to the dvresuce xml file(s)")
   var path: String
   
   @Argument(help: "Extension of the packaged files")
@@ -17,11 +17,18 @@ final class Options: ParsableArguments {
   @Argument(help: "Path to packaged files")
   var packgedFilesPath: String = OptionsContainer.current.packgedFilesPath
   
-  @Flag(name: .shortAndLong)
+  @Flag(name: .shortAndLong, help: "Show more logging")
   var verbose: Int
+  
+  @Flag(name: .shortAndLong, help: "Look for xml files within sub folders")
+  var recursive: Int
   
   @Option(name: .shortAndLong, help: "Create new files")
   var createNewFiles: Bool?
+  
+  @Option(name: .shortAndLong, help: "The DVRescue XML postfix")
+  var xmlPostfix: String = "dvrescue.xml"
+  
 }
 
 

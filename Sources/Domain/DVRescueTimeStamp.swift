@@ -31,7 +31,7 @@ private extension DVRescueTimeStamp {
       fatalError(DVDateError.noMediaInfoFound.localizedDescription)
     }
     
-    let builder = FileBuilder(media: media, frames: frames)
+    let builder = PackageFileBuilder(media: media, frames: frames)
     try builder.validate()
     try builder.prepare()
   }
