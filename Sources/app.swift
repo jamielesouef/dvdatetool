@@ -13,10 +13,13 @@ import ArgumentParser
     
     vlog("setup time tool...")
     let source = try SourceBuilder(options: options).run()
-    let tool = DVRescueTimeStamp(options: options)
+   
+    try DVRescueTimeStamp(
+      source: source,
+      options: options
+    )
+      .run()
     
-//    try tool.run(pathString: options.path)
-
   }
 }
 

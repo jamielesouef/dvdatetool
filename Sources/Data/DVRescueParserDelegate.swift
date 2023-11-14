@@ -8,6 +8,8 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
   let frameConverter: FrameConverter
   let mediaConverter: MediaConverter
   
+  var handler: ((Media, [Frame]) -> Void)?
+  
   init(media: Media? = nil, frameBuffer: [Frame] = [], options: Options) {
     self.media = media
     self.frameBuffer = frameBuffer
@@ -26,7 +28,7 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
     vlog("End of the document")
     vlog("Line number: \(parser.lineNumber)")
     
-    guard media != nil else {
+    guard let media else {
       fatalError(DVDateError.noMediaInfoFound.localizedDescription)
     }
     
@@ -34,6 +36,8 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
       fatalError(DVDateError.noMediaInfoFound.localizedDescription)
     }
     vlog("found \(frameBuffer.count) frames")
+    
+    handler?(media, frameBuffer)
   }
   
   func parser(
@@ -46,7 +50,7 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
     do {
       switch elementName {
       case "frame":
-        let frame = try frameConverter.convert(data: attributeDict)
+        guard let frame = try frameConverter.convert(data: attributeDict) else { return }
         frameBuffer.append(frame)
       case "media":
         let _media = try mediaConverter.convert(data: attributeDict)

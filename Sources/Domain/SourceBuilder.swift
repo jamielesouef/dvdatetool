@@ -31,11 +31,10 @@ struct SourceBuilder {
 private extension SourceBuilder {
   
   func shouldContinue(sources: [Source]) {
-    let sourceWithNoVideo = sources.map { $0.video == nil }
-    if sourceWithNoVideo.count > 0 {
-      sources.forEach {
-        slog("could not find a video for \($0.xml.lastPathComponent)")
-      }
+    let sourceWithNoVideo = sources.map { $0.video != nil }
+    
+    if sourceWithNoVideo.count == 0 {
+      slog("missing videos for some xml sources....")
       
       prompt_continue()
     }
@@ -43,15 +42,21 @@ private extension SourceBuilder {
   
   func buildSources(urls: [URL]) -> [Source] {
     urls.map { url in
-      let file = url.lastPathComponent.replacingOccurrences(of: options.xmlPostfix, with: "")
+      let file = url.lastPathComponent.replacingOccurrences(
+        of: ".\(options.xmlPostfix)",
+        with: ""
+      )
       let expectedVideoSource: URL = url.deletingLastPathComponent().appendingPathComponent(file)
-      vlog("looking for \(expectedVideoSource)")
       
       var video: URL? = nil
       
-      if FileManager.default.fileExists(atPath: expectedVideoSource.absoluteString){
+      if FileManager.default.fileExists(atPath: expectedVideoSource.relativePath){
         video = expectedVideoSource
+        vlog("looking for video \(expectedVideoSource.relativePath) - Found")
+      } else {
+        vlog("looking for video \(expectedVideoSource) - Not found!")
       }
+      
       
       return Source(xml: url, video: video)
     }
@@ -63,12 +68,13 @@ private extension SourceBuilder {
       .skipsPackageDescendants,
     ]
     
-    if options.verbose == 0 {
+    if options.recursive == 0 {
       enumerationOptions.insert(.skipsSubdirectoryDescendants)
     }
     
     let url = URL(fileURLWithPath: options.path)
     vlog("checking at path \(options.path)")
+    
     guard let filePaths = FileManager.default.enumerator(
       at: url,
       includingPropertiesForKeys: [.isRegularFileKey],
@@ -80,7 +86,12 @@ private extension SourceBuilder {
       )
     }
     
-    let xmls = filePaths.filter { $0.lastPathComponent.contains(options.xmlPostfix) }
+    let xmls = filePaths.filter {
+      $0.lastPathComponent.contains(
+        options.xmlPostfix
+      )
+    }
+    
     xmls.forEach {
       vlog("found \($0)")
     }

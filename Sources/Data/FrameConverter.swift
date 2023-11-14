@@ -9,13 +9,13 @@ struct FrameConverter {
     formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
   }
   
-  func convert(data:[String: String]) throws -> Frame {
+  func convert(data:[String: String]) throws -> Frame? {
     guard data["rec_start"] == "1",
           let n = data["n"],
           let rdt = data["rdt"],
           let recordDate = formatter.date(from: rdt) else {
       
-      throw DVDateError.missingXMLData
+      return nil
     }
     
     guard let nInt = UInt(n) else {

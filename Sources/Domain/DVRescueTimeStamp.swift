@@ -1,43 +1,51 @@
 import Foundation
 
+
+struct DVRescueTimeStampManager {
+  let source: [Source]
+}
+
 struct DVRescueTimeStamp {
   
   private let delegate: DVRescueParserDelegate
   let options: Options
+  let source: Source
   
-  init(options: Options) {
+  init(source: [Source], options: Options) {
     self.delegate = DVRescueParserDelegate(options: options)
     self.options = options
+    self.source = source.first!
   }
-  func run(pathString: String) throws {
+  
+  func run() throws {
     slog("start tool")
-    let data = try getDataFromFile(atPath: pathString)
+    let data = try getDataFromFile(at: source.xml)
     parseXML(with: data)
-    try process(media: delegate.media, frames: delegate.frameBuffer)
+    
   }
 }
 
 private extension DVRescueTimeStamp {
-  func getDataFromFile(atPath path: String) throws -> Data {
-    let hander = FileHandler(pathString: path)
+  func getDataFromFile(at url: URL) throws -> Data {
+    let hander = FileHandler(url: url)
     let data = try hander.loadFile()
     return data
   }
   
   func parseXML(with data: Data) {
     let xmlParser = XMLParser(data: data)
-    
+    delegate.handler = self.process
     xmlParser.delegate = delegate
     xmlParser.parse()
   }
   
-  func process(media: Media?, frames: [Frame]) throws {
-    guard let media = media else {
-      fatalError(DVDateError.noMediaInfoFound.localizedDescription)
-    }
-    
+  func process(media: Media, frames: [Frame]) {
     let builder = PackageFileBuilder(options: options, media: media, frames: frames)
-    try builder.validate()
-    try builder.prepare()
+    do {
+      try builder.validate()
+      try builder.prepare()
+    } catch {
+      fatalError(error.localizedDescription)
+    }
   }
 }

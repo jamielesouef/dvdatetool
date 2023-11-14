@@ -1,18 +1,12 @@
 import Foundation
 
 struct FileHandler {
-  let fileManager = FileManager.default
-  let url: URL
-  let path: String
   
-  init(pathString: String) {
-    self.path = pathString
-    self.url = URL(fileURLWithPath: pathString)
-  }
+  let url: URL
   
   func loadFile() throws -> Data {
-    if fileManager.fileExists(atPath: path) {
-      slog("found and opening file from path \(path)")
+    if FileManager.default.fileExists(atPath: url.relativePath) {
+      slog("found and opening file from path \(url.relativePath)")
       do {
         return try Data(contentsOf: url)
       } catch {

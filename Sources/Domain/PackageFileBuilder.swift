@@ -31,7 +31,6 @@ final class PackageFileBuilder {
       let exists: Bool = FileManager.default.fileExists(atPath: dvFile.absoluteString)
       
       if exists {
-        slog("\(dvFile) exists")
         return DVFile(src: dvFile, timestamp: frame.recordDateTime)
       } else {
         slog("\(dvFile) not found")
@@ -43,16 +42,20 @@ final class PackageFileBuilder {
   }
   
   func validate() throws {
-    vlog(path.absoluteString)
-    guard let filePaths = FileManager.default.enumerator(atPath: path.absoluteString)?.allObjects as? [String] else {
+    guard let files = FileManager.default.enumerator(at: path, includingPropertiesForKeys: nil)?.allObjects as? [URL] else {
       throw DVDateError.validateStepFailed(reason: "Could not find all objects")
     }
     
-    let packExtFiles = filePaths.filter { $0.contains(options.packageExtension)}
+    let packExtFiles = files.filter { $0.lastPathComponent.contains(options.packageExtension)}
     
     let dC = dvFiles.count
     let pC = packExtFiles.count
     vlog("dc", dC, "pC", pC)
+    
+    if dC == 0 {
+      vlog(path)
+      throw DVDateError.noVideoFilesFound
+    }
     
     if dC != pC {
       throw DVDateError.validateStepFailed(reason: "file count does not match: \(dC):\(pC)")
@@ -63,7 +66,7 @@ final class PackageFileBuilder {
   
   func prepare() throws {
     try dvFiles.forEach { file in
-      let attribute = try FileManager.default.attributesOfItem(atPath: file.src.absoluteString)
+      let attribute = try FileManager.default.attributesOfItem(atPath: file.src.relativePath)
       guard let cD = attribute[.creationDate] as? Date else {
         throw DVDateError.couldNotGetCreateDate
       }
@@ -77,19 +80,23 @@ final class PackageFileBuilder {
   func perform() throws {
     slog("will change files")
     dvFiles.forEach { file in
-      slog("Changing create date for \(file.file)")
+      
       let attributes = [
         FileAttributeKey.creationDate: file.timestamp,
       ]
       
-      
-      do {
-        let absoluteString = try copyFileIfRequried(from: file.src).absoluteString
-        try FileManager.default.setAttributes(attributes, ofItemAtPath: absoluteString)
-      } catch {
-        vlog(error)
+      if options.dryRyn == 1 {
+        slog("Changing create date for \(file.file) to \(file.timestamp.formatted())")
+      } else {
+        
+        do {
+          let relativeString = try copyFileIfRequried(from: file.src).relativeString
+          try FileManager.default.setAttributes(attributes, ofItemAtPath: relativeString)
+        } catch {
+          vlog(error)
+        }
+        slog("Done!")
       }
-      slog("Done!")
     }
   }
 }
@@ -101,17 +108,22 @@ private extension PackageFileBuilder {
       return src
     }
     
-    var path: URL = src.deletingLastPathComponent()
     var name: [String] = src.lastPathComponent.components(separatedBy: ".")
     let ext = name.removeLast()
     name.append("copy")
     name.append(ext)
     
     let newName = name.joined(separator: ".")
-    let newPath = path.appendingPathComponent(newName)
-    try FileManager.default.copyItem(atPath: src.absoluteString, toPath: newPath.absoluteString)
-    slog("Made copy \(newName)")
-    return newPath
+    let newURL = path.appendingPathComponent(newName)
+    
+    if options.dryRyn == 1 {
+      slog("will make a copy named \(newURL)")
+      return newURL
+    }
+    
+    try FileManager.default.copyItem(atPath: src.absoluteString, toPath: newURL.absoluteString)
+    slog("Made copy \(newURL)")
+    return newURL
     
   }
   

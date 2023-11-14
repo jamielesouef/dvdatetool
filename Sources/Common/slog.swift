@@ -56,13 +56,9 @@ private class _Slogger {
   }
   
   private func message(_ item: Any) {
-    
     let prefix = item is Error ? "!!! " : ""
+    let message = "\(prefix)\(item)"// |---\(fileName)::\(function):\(line))"
     
-#if DEBUG
-    let message = "\(prefix)\(item) |---\(fileName)::\(function):\(line))"
     print(message)
-#endif
-    
   }
 }
