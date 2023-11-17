@@ -3,13 +3,20 @@ import Foundation
 struct Source {
   let xml: URL
   let video: URL?
+  let baseBath: URL
+  
+  init(xml: URL, video: URL?) {
+    self.xml = xml
+    self.video = video
+    self.baseBath = xml.deletingLastPathComponent()
+  }
   
   func isValid() -> Bool {
     video != nil
   }
 }
 
-struct SourceBuilder {
+struct DVSourceBuilder {
   let options: Options
   
   init(options: Options) {
@@ -28,7 +35,7 @@ struct SourceBuilder {
   }
 }
 
-private extension SourceBuilder {
+private extension DVSourceBuilder {
   
   func shouldContinue(sources: [Source]) {
     let sourceWithNoVideo = sources.map { $0.video != nil }

@@ -58,6 +58,10 @@ private class _Slogger {
   private func message(_ item: Any) {
     let prefix = item is Error ? "!!! " : ""
     let message = "\(prefix)\(item)"// |---\(fileName)::\(function):\(line))"
+    if Slogger.current.verbose == 1 {
+      debugPrint(message)
+      return
+    }
     
     print(message)
   }

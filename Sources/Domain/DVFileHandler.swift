@@ -1,6 +1,6 @@
 import Foundation
 
-struct FileHandler {
+struct DVFileHandler {
   
   let url: URL
   

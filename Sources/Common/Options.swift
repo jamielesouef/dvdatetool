@@ -12,7 +12,7 @@ struct Options: ParsableArguments {
   var packagePrefix: String = ""
   
   @Argument(help: "Package postfix")
-  var packagePostfix: String = ""
+  var packagePostfix: String = "_part"
   
   @Argument(help: "Path to packaged files")
   var packgedFilesPath: String = "/"

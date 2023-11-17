@@ -12,9 +12,9 @@ import ArgumentParser
     vlog("DVDateTool.")
     
     vlog("setup time tool...")
-    let source = try SourceBuilder(options: options).run()
+    let source = try DVSourceBuilder(options: options).run()
    
-    try DVRescueTimeStamp(
+    try DVTimestampBuilder(
       source: source,
       options: options
     )
