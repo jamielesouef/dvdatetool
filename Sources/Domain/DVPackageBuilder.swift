@@ -28,7 +28,8 @@ final class DVPackageBuilder {
   func locateFiles() {
     dvFiles = frames
       .sorted { $0.n < $1.n}
-      .enumerated().compactMap { i, frame in
+      .enumerated()
+      .compactMap { i, frame in
         
         let dvFile: URL = makePathURL(for: frame, at: i+1)
         
@@ -113,12 +114,12 @@ final class DVPackageBuilder {
       } else {
         
         do {
-          let relativeString = try copyFileIfRequried(from: file.src).relativeString
-          try FileManager.default.setAttributes(attributes, ofItemAtPath: relativeString)
+          let fileURL: URL = try copyFileIfRequried(from: file.src)
+          try FileManager.default.setAttributes(attributes, ofItemAtPath: fileURL.path)
+          slog("\(fileURL.lastPathComponent) Done!")
         } catch {
-          vlog(error)
+          slog(error)
         }
-        slog("Done!")
       }
     }
   }

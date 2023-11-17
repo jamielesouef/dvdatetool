@@ -48,8 +48,9 @@ private extension DVTimestampBuilder {
       do {
         slog("---")
         builder.locateFiles()
-        try builder.validate()
+        builder.validate()
         try builder.prepare()
+        try builder.perform()
         slog("")
       } catch {
         fatalError(error.localizedDescription)
