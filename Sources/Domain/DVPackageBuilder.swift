@@ -22,7 +22,7 @@ final class DVPackageBuilder {
   init(source: Source, frames: [Frame], options: Options) {
     self.options = options
     self.source = source
-    self.frames = frames  
+    self.frames = frames
   }
   
   func locateFiles() {
@@ -30,20 +30,20 @@ final class DVPackageBuilder {
       .sorted { $0.n < $1.n}
       .enumerated().compactMap { i, frame in
         
-      let dvFile: URL = makePathURL(for: frame, at: i+1)
-      
-      let exists: Bool = FileManager.default.fileExists(atPath: dvFile.relativePath)
-      
-      if exists {
-        slog("\(dvFile) found")
-        return PackageVideoFile(src: dvFile, timestamp: frame.recordDateTime)
-      } else {
-        vlog("\(dvFile) not found")
+        let dvFile: URL = makePathURL(for: frame, at: i+1)
+        
+        let exists: Bool = FileManager.default.fileExists(atPath: dvFile.relativePath)
+        
+        if exists {
+          vlog("\(dvFile) found")
+          return PackageVideoFile(src: dvFile, timestamp: frame.recordDateTime)
+        } else {
+          vlog("\(dvFile) not found")
+        }
+        
+        return nil
+        
       }
-      
-      return nil
-      
-    }
     
     slog("found \(dvFiles.count) package fiels for \(source.xml.lastPathComponent)")
   }
@@ -62,7 +62,7 @@ final class DVPackageBuilder {
       
       if dC == 0 {
         vlog(source.baseBath)
-              throw DVDateError.noVideoFilesFound
+        throw DVDateError.noVideoFilesFound
       }
       
       if dC != pC {
@@ -79,12 +79,21 @@ final class DVPackageBuilder {
   
   func prepare() throws {
     if isValid {
-      try dvFiles.forEach { file in
-        let attribute = try FileManager.default.attributesOfItem(atPath: file.src.relativePath)
-        guard let cD = attribute[.creationDate] as? Date else {
-          throw DVDateError.couldNotGetCreateDate
+      try dvFiles
+        .map { file in
+          let attribute = try FileManager.default.attributesOfItem(atPath: file.src.relativePath)
+          guard let creationDate = attribute[.creationDate] as? Date else {
+            throw DVDateError.couldNotGetCreateDate
+          }
+          
+          return (file, creationDate)
+          
+          
+        }.filter { (file, date) in
+          file.timestamp != date
         }
-        slog("will change create date for \(file.file) from \(cD.description) to \(file.timestamp.description)")
+        .forEach { (file, createDate) in
+          slog("will change create date for \(file.file) from \(createDate) to \(file.timestamp.description)")
       }
       
       prompt_continue(message: "(this can not be undone)")
