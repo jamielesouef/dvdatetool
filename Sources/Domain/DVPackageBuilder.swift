@@ -23,6 +23,8 @@ final class DVPackageBuilder {
     self.options = options
     self.source = source
     self.frames = frames
+    
+    vlog(source.xml, frames.count)
   }
   
   func locateFiles() {

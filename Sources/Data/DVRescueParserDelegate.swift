@@ -3,7 +3,7 @@ import Foundation
 final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
   
   private (set) var frameBuffer: [Frame]
-  
+  private var buffer: [[String: String]] = []
   let frameConverter: FrameConverter
   
   var handler: (([Frame]) -> Void)?
@@ -25,13 +25,37 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
     vlog("End of the document")
     vlog("Line number: \(parser.lineNumber)")
     
-    guard frameBuffer.count > 0 else {
-      fatalError(DVDateError.noMediaInfoFound.localizedDescription)
+    guard buffer.count > 0, let first = buffer.first, let last = buffer.last else {
+      fatalError(
+        DVDateError.noMediaInfoFound.localizedDescription
+      )
     }
+    
+    do {
+      
+      frameBuffer = try buffer.compactMap {
+        try frameConverter.convert(
+          data: $0
+        )
+      }
+      
+      let firstFrame = try frameConverter.unsafeConvert(data: first)
+      let lastFrame = try frameConverter.unsafeConvert(data: last)
+      frameBuffer.append(firstFrame)
+      frameBuffer.append(lastFrame)
+      
+      frameBuffer = frameBuffer.sorted { $0.n < $1.n }
+      
+    } catch {
+      vlog(error)
+      fatalError(DVDateError.noFrameData.localizedDescription)
+    }
+    
     vlog("found \(frameBuffer.count) frames")
     
     handler?(frameBuffer)
     frameBuffer.removeAll(keepingCapacity: true)
+    buffer.removeAll(keepingCapacity: true)
   }
   
   func parser(
@@ -41,16 +65,13 @@ final class DVRescueParserDelegate: NSObject, XMLParserDelegate {
     qualifiedName qName: String?,
     attributes attributeDict: [String : String] = [:]
   ) {
-    do {
-      switch elementName {
-      case "frame":
-        guard let frame = try frameConverter.convert(data: attributeDict) else { return }
-        frameBuffer.append(frame)
-     default: return
-      }
-    } catch {
-      slog(error)
+    
+    switch elementName {
+    case "frame":
+      buffer.append(attributeDict)
+    default: return
     }
+    
   }
 }
 

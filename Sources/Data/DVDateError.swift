@@ -11,6 +11,8 @@ enum DVDateError: Swift.Error {
   case validateStepFailed(reason: String)
   case couldNotGetCreateDate
   case noVideoFilesFound
+  case noFrameData
+  case couldNotCreateFrame(unsafe: Bool)
   
 }
 
@@ -27,6 +29,8 @@ extension DVDateError: LocalizedError {
     case .validateStepFailed(let reason): "Vailidation failed: \(reason)"
     case .couldNotGetCreateDate: "Could not get create date"
     case .noVideoFilesFound: "Could not find any dv files"
+    case .noFrameData: "No frame data"
+    case .couldNotCreateFrame(let unsafe): "Could not create \(unsafe ? "un" : "")frame"
     }
   }
 }
